@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>電腦及週邊設備產業鏈 — 台灣廠商地圖</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: #f7f7f5;
+    color: #1a1a18;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  .header { margin-bottom: 2rem; }
+  .header h1 { font-size: 22px; font-weight: 500; color: #1a1a18; margin-bottom: 6px; }
+  .header p { font-size: 13px; color: #6b6b67; }
+  .chain { display: flex; gap: 0; align-items: stretch; }
+  .tier { flex: 1; min-width: 0; }
+  .tier-header {
+    padding: 10px 12px;
+    border-radius: 8px 8px 0 0;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: center;
+  }
+  .tier-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    background: #eeede7;
+    border-radius: 0 0 8px 8px;
+    min-height: 320px;
+  }
+  .item-btn {
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 0.5px solid #d3d1c7;
+    background: #ffffff;
+    font-size: 12px;
+    color: #1a1a18;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, background 0.15s;
+    line-height: 1.4;
+    font-family: inherit;
+  }
+  .item-btn:hover { border-color: #888780; background: #f7f7f5; }
+  .item-btn.active-blue  { border-color: #185FA5; background: #E6F1FB; color: #0C447C; }
+  .item-btn.active-teal  { border-color: #0F6E56; background: #E1F5EE; color: #085041; }
+  .item-btn.active-amber { border-color: #BA7517; background: #FAEEDA; color: #633806; }
+  .arrow {
+    display: flex; align-items: center; padding: 0 6px;
+    align-self: center;
+  }
+  .arrow svg { opacity: 0.35; }
+  .panel {
+    margin-top: 1.25rem;
+    background: #ffffff;
+    border: 0.5px solid #d3d1c7;
+    border-radius: 12px;
+    padding: 1.25rem;
+    min-height: 130px;
+  }
+  .panel-empty { color: #b4b2a9; font-size: 14px; padding: 1rem 0; }
+  .panel-title { font-size: 16px; font-weight: 500; color: #1a1a18; margin-bottom: 4px; }
+  .panel-desc { font-size: 13px; color: #6b6b67; margin-bottom: 14px; }
+  .companies { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .co-chip {
+    padding: 5px 13px;
+    border-radius: 99px;
+    font-size: 13px;
+    border: 0.5px solid;
+    font-family: inherit;
+  }
+  .chip-blue  { background: #E6F1FB; border-color: #B5D4F4; color: #0C447C; }
+  .chip-teal  { background: #E1F5EE; border-color: #9FE1CB; color: #085041; }
+  .chip-amber { background: #FAEEDA; border-color: #FAC775; color: #633806; }
+  .note { font-size: 12px; color: #888780; line-height: 1.7; border-top: 0.5px solid #eeede7; padding-top: 10px; }
+  .legend { display: flex; gap: 16px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6b6b67; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  @media (max-width: 600px) {
+    .chain { flex-direction: column; gap: 8px; }
+    .arrow { transform: rotate(90deg); align-self: center; padding: 4px 0; }
+    .tier-items { min-height: auto; }
+  }
+  .source {
+    margin-top: 1.5rem;
+    font-size: 11px;
+    color: #b4b2a9;
+    text-align: center;
+  }
+  .source a { color: #185FA5; text-decoration: none; }
+  .source a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>電腦及週邊設備產業鏈</h1>
+    <p>點選任一項目，查看台灣代表廠商 ｜ 資料來源：櫃買中心產業價值鏈平台 (F000)</p>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#378ADD;"></div>上游 — 零組件供應</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#1D9E75;"></div>中游 — 整機製造</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#EF9F27;"></div>下游 — 終端應用</div>
+  </div>
+
+  <div class="chain">
+    <div class="tier">
+      <div class="tier-header" style="background:#E6F1FB; color:#0C447C;">上游　零組件供應</div>
+      <div class="tier-items" id="tier-up"></div>
+    </div>
+    <div class="arrow">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M4 10h12M11 5l5 5-5 5" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="tier">
+      <div class="tier-header" style="background:#E1F5EE; color:#085041;">中游　整機製造</div>
+      <div class="tier-items" id="tier-mid"></div>
+    </div>
+    <div class="arrow">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M4 10h12M11 5l5 5-5 5" stroke="#5F5E5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="tier">
+      <div class="tier-header" style="background:#FAEEDA; color:#633806;">下游　終端應用</div>
+      <div class="tier-items" id="tier-down"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel">
+    <div class="panel-empty">← 點選上方任一項目，查看台灣代表廠商</div>
+  </div>
+
+  <div class="source">資料整理自 <a href="https://ic.tpex.org.tw/introduce.php?ic=F000" target="_blank">ic.tpex.org.tw (F000 電腦及週邊設備)</a>，僅供參考，實際廠商組成以官方為準。</div>
+</div>
+
+<script>
+const data = {
+  up: [
+    {
+      name: "主機板",
+      desc: "桌上型電腦核心零組件，分品牌通路與OEM兩種型態出貨",
+      companies: ["華碩 (2357)","技嘉 (2376)","微星 (2377)","華擎 (3594)","青雲 (3617)"],
+      note: "2025年全球主機板出貨量約79,768千片，年成長率約2.3%。受惠AI PC題材帶動，高階主機板需求走強。"
+    },
+    {
+      name: "顯示卡",
+      desc: "桌機、筆電、工作站及伺服器均有採用，AI算力需求帶動高階顯卡成長",
+      companies: ["華碩 (2357)","技嘉 (2376)","微星 (2377)","麗臺 (2465)"],
+      note: "2025年全球顯示卡出貨年成長率約13%，電競與AI地端運算需求共同帶動換卡潮。"
+    },
+    {
+      name: "電源供應器",
+      desc: "應用於桌機、工業電腦、液晶電視等，與整機出貨高度連動",
+      companies: ["台達電 (2308)","全漢 (3015)","康舒 (6282)","偉訓 (3032)"],
+      note: "台達電為全球電源供應器龍頭之一，在伺服器電源市場擁有重要地位。"
+    },
+    {
+      name: "散熱模組",
+      desc: "CPU／GPU散熱片與散熱模組，高功耗AI晶片大幅推升散熱需求",
+      companies: ["奇鋐 (3017)","雙鴻 (3324)","超眾 (6230)","建準 (2421)","昆盈 (2365)"],
+      note: "AI晶片功耗快速提升，散熱廠商積極布局液冷及先進散熱方案，是AI基礎設施的關鍵供應商。"
+    },
+    {
+      name: "記憶體模組",
+      desc: "DRAM模組及快閃儲存裝置，為PC及伺服器核心零件",
+      companies: ["威剛 (3260)","宇瞻 (8271)","十銓 (4967)","創見 (2451)"],
+      note: "台廠轉型高速DDR5及AI邊緣運算用記憶體，積極搶攻AI伺服器周邊記憶體市場。"
+    },
+    {
+      name: "機殼 / 伺服器機箱",
+      desc: "桌機及伺服器機箱，含電競外觀設計與標準工業規格",
+      companies: ["迎廣 (6297)","曜越 (3540)","勤誠 (8210)","廣運 (6125)"],
+      note: "AI伺服器機箱需具備高散熱能力與模組化設計，勤誠、廣運受惠AI伺服器需求強勁成長。"
+    }
+  ],
+  mid: [
+    {
+      name: "筆記型電腦",
+      desc: "全球最大消費性電腦品類，AI NB為2025–2026年主要升級動能",
+      companies: ["華碩 (2357)","宏碁 (2353)","仁寶 (2324)","廣達 (2382)","緯創 (3231)","英業達 (2356)","和碩 (4938)"],
+      note: "2025年全球NB出貨約174,590千台，年成長1.3%；2026年AI NB滲透率提升，預估成長2.9%。"
+    },
+    {
+      name: "桌上型電腦",
+      desc: "含品牌機、組裝機及電競桌機，市場規模趨於持平",
+      companies: ["華碩 (2357)","宏碁 (2353)","技嘉 (2376)","微星 (2377)"],
+      note: "電競桌機需求維持正成長，各品牌持續推出強調效能及設計感新品，AI PC換機潮為重要觀察指標。"
+    },
+    {
+      name: "伺服器",
+      desc: "AI伺服器為主要成長動能，雲端服務商與主權AI均加速採購",
+      companies: ["廣達 (2382)","緯創 (3231)","緯穎 (6669)","英業達 (2356)","仁寶 (2324)","鴻海 (2317)","和碩 (4938)"],
+      note: "2025年全球伺服器出貨14,324千台，年增5.6%。台廠壟斷AI伺服器代工，受惠最深。"
+    },
+    {
+      name: "工業電腦",
+      desc: "重視穩定可靠，應用於製造業、醫療、交通、智慧零售等場域",
+      companies: ["研華 (2395)","研揚 (6274)","凌華 (6166)","廣積 (8050)","宸曜 (6417)","新漢 (8234)"],
+      note: "2025年全球IPC出貨年增率約12.4%，AI Edge運算需求推升IPC廠新一波成長動能。"
+    }
+  ],
+  down: [
+    {
+      name: "消費型電腦品牌",
+      desc: "面向一般消費者及企業用戶，以品牌銷售筆電與桌機",
+      companies: ["華碩 (2357)","宏碁 (2353)","微星 (2377)"],
+      note: "台灣品牌在全球PC市場持續保有重要地位，AI PC換機潮為2026年重要觀察指標。"
+    },
+    {
+      name: "電競設備",
+      desc: "電競筆電、桌機、周邊，高毛利且品牌忠誠度高",
+      companies: ["華碩 ROG (2357)","技嘉 AORUS (2376)","微星 (2377)","曜越 (3540)"],
+      note: "電競市場持續成長，台灣廠商在硬體效能、散熱設計及電競美學上擁有全球競爭優勢。"
+    },
+    {
+      name: "AI伺服器系統",
+      desc: "整合GPU叢集的高效能AI運算基礎設施，是當前最熱門成長動能",
+      companies: ["廣達 (2382)","緯穎 (6669)","緯創 (3231)","英業達 (2356)","鴻海 (2317)"],
+      note: "台灣廠商幾乎壟斷全球AI伺服器代工，供應NVIDIA、AMD等大廠完整AI機架解決方案。"
+    },
+    {
+      name: "電腦周邊設備",
+      desc: "含螢幕、鍵盤、滑鼠、投影機、掃描器等周邊裝置",
+      companies: ["華碩 (2357)","宏碁 (2353)","明基 (2352)","中光電 (5371)"],
+      note: "顯示器及多媒體周邊持續布局高色域、高更新率產品，電競與創作者市場是主要成長動能。"
+    },
+    {
+      name: "智慧製造 / AIoT",
+      desc: "工業電腦結合AIoT，應用於智慧工廠、自動化產線及邊緣運算",
+      companies: ["研華 (2395)","研揚 (6274)","凌華 (6166)","廣積 (8050)","宸曜 (6417)"],
+      note: "AI浪潮帶動AIoT需求快速成長，工業電腦廠積極搶佔邊緣AI（Edge AI）市場商機。"
+    }
+  ]
+};
+
+const activeClass = { up: 'active-blue', mid: 'active-teal', down: 'active-amber' };
+const chipClass   = { up: 'chip-blue',   mid: 'chip-teal',   down: 'chip-amber' };
+
+function render(tierId, items) {
+  const el = document.getElementById('tier-' + tierId);
+  items.forEach((item, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'item-btn';
+    btn.textContent = item.name;
+    btn.onclick = () => showPanel(item, btn, tierId);
+    el.appendChild(btn);
+  });
+}
+
+function showPanel(item, btn, tierId) {
+  document.querySelectorAll('.item-btn').forEach(b => {
+    b.classList.remove('active-blue', 'active-teal', 'active-amber');
+  });
+  btn.classList.add(activeClass[tierId]);
+  const panel = document.getElementById('panel');
+  const cc = chipClass[tierId];
+  panel.innerHTML = `
+    <div class="panel-title">${item.name}</div>
+    <div class="panel-desc">${item.desc}</div>
+    <div class="companies">${item.companies.map(c => `<span class="co-chip ${cc}">${c}</span>`).join('')}</div>
+    ${item.note ? `<div class="note">${item.note}</div>` : ''}
+  `;
+}
+
+render('up', data.up);
+render('mid', data.mid);
+render('down', data.down);
+</script>
+</body>
+</html>
